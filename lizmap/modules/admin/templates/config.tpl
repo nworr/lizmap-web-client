@@ -6,7 +6,7 @@
   <div>
     <h2>{@admin~admin.generic.h2@}</h2>
     <dl>
-      <dt>{@admin~admin.generic.version.number.label@}</dt><dd>{$version}</dd>
+      <dt>{@admin~admin.generic.version.number.label@}</dt><dd>{$version}</dd> YEAH
     </dl>
   </div>
 
