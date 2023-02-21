@@ -597,6 +597,7 @@ class serviceCtrl extends jController
         $filename = 'qgis_server_wms_map_'.$this->repository->getKey().'_'.$this->project->getKey();
         $this->setupBinaryResponse($rep, $result, $filename);
 
+        $rep->addHttpHeader("X-Original",  $result->headers['original-url'] );
         if (!preg_match('/^image/', $result->mime)) {
             return $rep;
         }
@@ -639,6 +640,7 @@ class serviceCtrl extends jController
         $rep = $this->getResponse('binary');
         $this->setupBinaryResponse($rep, $result, 'qgis_server_legend');
 
+        $rep->addHttpHeader("X-Original",  $result->headers['original-url'] );
         return $rep;
     }
 
@@ -688,6 +690,7 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+        $rep->addHttpHeader("X-Original",  $result->headers['original-url'] );
         $fileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
         $this->setupBinaryResponse($rep, $result, $fileName);
         $rep->doDownload = true;
