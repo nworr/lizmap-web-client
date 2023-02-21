@@ -392,7 +392,7 @@ class WMSRequest extends OGCRequest
             $rep .= $data;
         }
 
-        return new OGCResponse($code, $mime, $rep, $response->cached);
+        return new OGCResponse($code, $mime, $rep, $response->cached,);
     }
 
     /**
@@ -1154,6 +1154,6 @@ class WMSRequest extends OGCRequest
             }
         }
 
-        return new OGCResponse($code, $mime, $data, $cached);
+        return new OGCResponse($code, $mime, $data, $cached,["original-url"=>Proxy::constructUrl($params, $this->services)]);
     }
 }
