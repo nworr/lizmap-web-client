@@ -219,8 +219,8 @@ abstract class OGCRequest
         }
 
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
-
-        return new OGCResponse($code, $mime, $data);
+        // ADD header here ? 
+        return new OGCResponse($code, $mime, $data,false,["original-url"=>$querystring]);
     }
 
     /**
