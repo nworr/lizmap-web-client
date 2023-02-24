@@ -639,8 +639,9 @@ class serviceCtrl extends jController
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $this->setupBinaryResponse($rep, $result, 'qgis_server_legend');
-
-        $rep->addHttpHeader("X-Original",  $result->headers['original-url'] );
+        if (array_key_exists('ADD_OGC_ORIGINAL_REQUEST',$_SERVER) &&  $_SERVER['ADD_OGC_ORIGINAL_REQUEST'] == 'on') {
+            $rep->addHttpHeader("X-Original",  $result->headers['original-url'] );
+        }
         return $rep;
     }
 
