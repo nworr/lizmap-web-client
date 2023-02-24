@@ -26,4 +26,15 @@ test.describe('Startup', () => {
      
     await expect( page.locator('#layer-quartiers')).toHaveClass(/liz-layer/);
   });
+
+  test('QGIS legend requested', async ({ page }) => {
+    const url = '/index.php/view/map?repository=testsrepository&project=base_layers';
+    await page.goto(url, { waitUntil: 'networkidle' });
+
+    // Start waiting for response before clicking. Note no await.
+    const responsePromise = page.waitForResponse(/GetLegend/);
+    await page.locator('#layer-quartiers a[class="expander"]').click();
+    let response = await responsePromise;
+    expect(response.headers()['x-original']).toContain('getlegendgraphic');
+  });
 });
