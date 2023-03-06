@@ -56,6 +56,8 @@ abstract class OGCRequest
      */
     protected $appContext;
 
+    protected bool $hasOriginalURLInHeader;
+
     /**
      * constructor.
      *
@@ -76,6 +78,7 @@ abstract class OGCRequest
         $params['map'] = $project->getRelativeQgisPath();
         $this->params = Proxy::normalizeParams($params);
         $this->requestXml = $requestXml;
+        $this->hasOriginalURLInHeader = false;
     }
 
     /**
@@ -219,8 +222,12 @@ abstract class OGCRequest
         }
 
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
-        // ADD header here ? 
-        return new OGCResponse($code, $mime, $data,false,["original-url"=>$querystring]);
+        $headers = array();
+        if ($this->hasOriginalURLInHeader) {
+            $headers = array('original-url' => $querystring);
+        }
+
+        return new OGCResponse($code, $mime, $data, false, $headers);
     }
 
     /**
@@ -335,5 +342,10 @@ abstract class OGCRequest
         }
 
         return $xml;
+    }
+
+    public function setHasOriginaleURLInHeader(bool $boolVal)
+    {
+        $this->hasOriginalURLInHeader = $boolVal;
     }
 }
