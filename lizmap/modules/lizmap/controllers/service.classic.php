@@ -78,7 +78,9 @@ class serviceCtrl extends jController
 
             return $this->serviceException();
         }
-
+        if (getenv('ADD_OGC_ORIGINAL_REQUEST') == 'on') {
+            $ogcRequest->setHasOriginaleURLInHeader(true);
+        }
         // Return the appropriate action
         $request = $ogcRequest->param('request');
         if (!$request) {
@@ -322,6 +324,9 @@ class serviceCtrl extends jController
         if (is_string($ogcResult->data) || is_callable($ogcResult->data)) {
             $rep->content = $ogcResult->data;
         }
+        if (getenv('ADD_OGC_ORIGINAL_REQUEST') == 'on' && array_key_exists('original-url', $ogcResult->headers)) {
+            $rep->addHttpHeader('X-Original', $ogcResult->headers['original-url']);
+        }
         $rep->doDownload = false;
         $rep->outputFileName = $filename;
         if ($eTag !== '' && $ogcResult->code < 400) {
@@ -419,8 +424,8 @@ class serviceCtrl extends jController
                 if ($data) {
                     $data = json_decode($data);
                     if (
-                  property_exists($data, 'filter')
-                  and trim($data->filter) != ''
+                    property_exists($data, 'filter')
+                    and trim($data->filter) != ''
                 ) {
                         $filters[] = $data->filter;
                     }
@@ -597,7 +602,6 @@ class serviceCtrl extends jController
         $filename = 'qgis_server_wms_map_'.$this->repository->getKey().'_'.$this->project->getKey();
         $this->setupBinaryResponse($rep, $result, $filename);
 
-        $rep->addHttpHeader("X-Original",  $result->headers['original-url'] );
         if (!preg_match('/^image/', $result->mime)) {
             return $rep;
         }
@@ -639,9 +643,7 @@ class serviceCtrl extends jController
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $this->setupBinaryResponse($rep, $result, 'qgis_server_legend');
-        if (array_key_exists('ADD_OGC_ORIGINAL_REQUEST',$_SERVER) &&  $_SERVER['ADD_OGC_ORIGINAL_REQUEST'] == 'on') {
-            $rep->addHttpHeader("X-Original",  $result->headers['original-url'] );
-        }
+
         return $rep;
     }
 
@@ -691,7 +693,6 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->addHttpHeader("X-Original",  $result->headers['original-url'] );
         $fileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
         $this->setupBinaryResponse($rep, $result, $fileName);
         $rep->doDownload = true;
