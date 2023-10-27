@@ -8,24 +8,106 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.7 - 2023-10-12
+
 ### Added
 
-* Support for the QGIS widget "number": min, max and step are supported
+* Add a message about exporting data is in on progress
 
 ### Fixed
 
+* When creating/editing a geometry, check the spatial constraint 
+* Fix an error about GetFeatureInfo and GetFilterToken requests to QGIS server
+* Fix cascade layer's filter to use the parent WMS name instead of the layer name
+* A locale for the account registration was missing, generating a 500 error
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Funders
+
+* [WPD](https://www.wpd.fr/)
+* [Calvados province in France](https://www.calvados.fr/) 
+* [Vaucluse province in France](https://www.vaucluse.fr/)
+
+## 3.6.6 - 2023-10-04
+
+### Added
+
+* New password security checker
+
+### Fixed
+
+* Improve the display on mobile about the menu
+* Improve logs displayed in the administration panel
+* Fix loading of the editing form having a nullable checkbox
+* Fix address search when results of the query to api-adresse.data.gouv.fr are empty
+* Fix popup when opened from a Lizmap Atlas when the layer has a shortname
+* When the layer has an accent :
+  * Fix the export of the layer
+  * Fix filtered features disappear from map* Do not display child plot in popup when there is no data
+* Fix some grammar
+* Allow import/export in selection tool
+* Fix 500 error in the administration panel when the "Lizmap server" plugin was not found
+* Fix increase the login length in the database in order to use email as logins
+* The minimal length of password is now 12 characters to improve the security
+* Fix PHP notice about CRS variable
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Funders
+
+* [Faunalia](https://www.faunalia.eu/fr)
+
+## 3.6.5 - 2023-08-08
+
+### Added
+
+* Support for the QGIS widget "number": min, max and step are supported from QGIS desktop
+
+### Fixed
+
+* Use layer name as option label for locate-by-layer selector in mobile
 * Support for [OpenTopoMap](https://opentopomap.org/)
+* Editing & Filter - Fix editing right access from popup
 * Fix a visibility error for a QGIS preset/theme
 * Warning about "qgsmtime" for an embedded layer
 * Improve the checklist when installing Lizmap Web Client about QGIS Server
 
+### Changed
+
+* Better backend log management, especially when updating a layer has failed
+* Improve the QGIS project panel in the administration :
+  * Add some colours in the legend
+  * Improve the display, better UX
+
 ### Backend
 
 * Some JavaScript cleaning
+* Fix some PHP notice when running PHP 8, contribution from @Antoviscomi
+
+### Translations
+
+* Improve an English sentence, contribution from @gioman
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Tests
+
+* Add PHP 8.2 to the matrix for PHP tests
+* Improvements to the Playwright stack
 
 ### Funders
 
-* Geolab.re
+* [Geolab.re](https://geolab.re/)
 
 ## 3.6.4 - 2023-05-30
 

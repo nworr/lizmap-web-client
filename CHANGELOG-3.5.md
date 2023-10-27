@@ -8,15 +8,58 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.5.16 - 2023-10-11
+
+### Fixed
+
+* Fix cascade layer's filter to use the parent WMS name instead of the layer name
+
+## 3.5.15 - 2023-10-03
+
+### Fixed
+
+* Improve the display on mobile about the menu
+* Improve logs displayed in the administration panel
+* Fix loading of the editing form having a nullable checkbox
+* Fix address search when results of the query to api-adresse.data.gouv.fr are empty
+* Fix popup when opened from a Lizmap Atlas when the layer has a shortname
+* Fix some issues about editing capabilities
+* Improve the polygon filtering to get the computed polygon from the cache
+* When the layer has an accent :
+  * Fix the export of the layer
+  * Fix filtered features disappear from map
+* Fix some grammar
+* Fix PHP notice about CRS variable
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+## 3.5.14 - 2023-07-31
+
 ### Important
 
-* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.1
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.8.0
 * Minimum QGIS server needed 3.10
 
 ### Fixed
 
 * Fix a visibility error for a QGIS preset/theme
 * Warning about "qgsmtime" for an embedded layer
+* Avoid a division by 0 when the scale was set to 0
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Backend
+
+* Fix some PHP notice when running PHP 8, contribution from @Antoviscomi
+* Upgrade Jelix to the latest version 1.6 and jCommunity to 1.3.20
 
 ### Funders
 

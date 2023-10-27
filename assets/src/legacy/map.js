@@ -3419,9 +3419,12 @@ window.lizMap = function() {
           });
 
       }
-
+      var fiurl = OpenLayers.Util.urlAppend(
+        lizUrls.wms,
+        OpenLayers.Util.getParameterString(lizUrls.params)
+      );
       var WMSGetFeatureInfo = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: lizUrls.service,
+            url: fiurl,
             title: 'Identify features by clicking',
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
@@ -3591,7 +3594,7 @@ window.lizMap = function() {
                         typename: lName,
                         filter: lConfig['request_params']['filter']
                     };
-                    $.post(lizUrls.service, sdata, function(){
+                    $.post(surl, sdata, function(){
                         refreshGetFeatureInfo(evt);
                     });
                 }else{
@@ -4956,7 +4959,12 @@ window.lizMap = function() {
       getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
 
       // Download file
-      downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options']);
+      document.querySelectorAll('.exportLayer').forEach(el => el.disabled = true);
+      mAddMessage(lizDict['layer.export.started'], 'info', true).addClass('export-in-progress');
+      downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options'], () => {
+        document.querySelectorAll('.exportLayer').forEach(el => el.disabled = false);
+        document.querySelector('#message .export-in-progress a').click();
+      });
 
       return false;
   }

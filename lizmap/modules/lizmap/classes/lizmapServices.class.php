@@ -438,8 +438,12 @@ class lizmapServices
                 $liveIni->setValue($key, $this->{$prop}, $section);
             } elseif ($this->{$prop} != '') {
                 $ini->setValue($prop, $this->{$prop}, 'services');
-                if ($prop == 'adminContactEmail' && $this->globalConfig->lizmap['setAdminContactEmailAsReplyTo']) {
-                    $liveIni->setValue('replyTo', $this->{$prop}, 'mailer');
+                if ($prop == 'adminContactEmail') {
+                    if ($this->globalConfig->lizmap['setAdminContactEmailAsReplyTo']) {
+                        $liveIni->setValue('replyTo', $this->{$prop}, 'mailer');
+                    }
+                    // for jCommunity 1.4+
+                    $liveIni->setValue('notificationReceiverEmail', $this->{$prop}, 'jcommunity');
                 }
             } else {
                 $ini->removeValue($prop, 'services');
@@ -460,15 +464,16 @@ class lizmapServices
             try {
                 $mail->Send();
             } catch (Exception $e) {
-                jLog::log('error while sending email to admin: '.$e->getMessage(), 'error');
+                jLog::log('error while sending email to admin: '.$e->getMessage(), 'lizmapadmin');
+                jLog::logEx($e, 'error');
             }
         } else {
             if (!$sender && !$email) {
-                jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'warning');
+                jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'lizmapadmin');
             } elseif (!$email) {
-                jLog::log('Notification cannot be send: no notification email has been configured', 'warning');
+                jLog::log('Notification cannot be send: no notification email has been configured', 'lizmapadmin');
             } else {
-                jLog::log('Notification cannot be send: no sender email has been configured', 'warning');
+                jLog::log('Notification cannot be send: no sender email has been configured', 'lizmapadmin');
             }
         }
     }
