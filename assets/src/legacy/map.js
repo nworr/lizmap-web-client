@@ -7056,8 +7056,7 @@ lizMap.events.on({
               options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
             var ignmap = new OpenLayers.Layer.WMTS({
               name: "ignmap",
-              url: "https://wxs.ign.fr/" + ignKey + "/geoportail/wmts",
-              layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
+              url: "https://data.geopf.fr/wmts?",
               matrixSet: "PM",
               style: "normal",
               projection: new OpenLayers.Projection("EPSG:3857"),
@@ -7093,7 +7092,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var ignplan = new OpenLayers.Layer.WMTS({
             name: "ignplan",
-            url: "https://wxs.ign.fr/cartes/geoportail/wmts",
+            url: "https://data.geopf.fr/wmts?",
             layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
             matrixSet: "PM",
             style: "normal",
@@ -7130,7 +7129,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var ignphoto = new OpenLayers.Layer.WMTS({
             name: "ignphoto",
-            url: "https://wxs.ign.fr/ortho/geoportail/wmts",
+            url: "https://data.geopf.fr/wmts?",
             layer: "ORTHOIMAGERY.ORTHOPHOTOS",
             matrixSet: "PM",
             style: "normal",
@@ -7166,7 +7165,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var igncadastral = new OpenLayers.Layer.WMTS({
             name: "igncadastral",
-            url: "https://wxs.ign.fr/parcellaire/geoportail/wmts",
+            url: "https://data.geopf.fr/wmts?",
             layer: "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
             matrixSet: "PM",
             style: "normal",
