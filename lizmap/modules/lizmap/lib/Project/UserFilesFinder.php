@@ -15,11 +15,13 @@ class UserFilesFinder
 {
     public function listFileURLS(Project $project, $ignoreRepoAllowUserDefined = false)
     {
+
         $jsUrls = array();
         $mjsUrls = array();
         $cssUrls = array();
-        if ($ignoreRepoAllowUserDefined && $project->getRepository()->allowUserDefinedThemes()) {
+        if ($ignoreRepoAllowUserDefined || $project->getRepository()->allowUserDefinedThemes()) {
 
+            $appContext = $project->getAppContext();
             $jsDirArray = array('default', $project->getKey());
             $repositoryPath = $project->getRepository()->getPath();
             foreach ($jsDirArray as $dir) {
@@ -42,23 +44,24 @@ class UserFilesFinder
                                 if ($fileExtension == 'css') {
                                     $url = 'view~media:getCssFile';
                                 }
-                                $jsUrl = \jUrl::get(
+
+                                $fileUrl = $appContext->getUrl(
                                     $url,
                                     array(
                                         'repository' => $project->getRepositoryKey(),
-                                        'project' => $project,
+                                        'project' => $project->getKey(),
                                         'mtime' => filemtime($filename),
                                         'path' => $jsRelPath,
                                     )
                                 );
                                 if ($fileExtension == 'js') {
-                                    $jsUrls[] = $jsUrl;
+                                    $jsUrls[] = $fileUrl;
 
                                 } elseif ($fileExtension == 'mjs') {
-                                    $mjsUrls[] = $jsUrl;
+                                    $mjsUrls[] = $fileUrl;
 
                                 } else {
-                                    $cssUrls[] = $jsUrl;
+                                    $cssUrls[] = $fileUrl;
                                 }
                             }
                         }
