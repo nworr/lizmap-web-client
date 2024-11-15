@@ -210,8 +210,10 @@ class ContextForTests implements AppContextInterface
     {
     }
 
-    public function getUrl($selector)
+    public function getUrl($selector, $params = array())
     {
+        // simple url build
+        return $selector.'?'.implode("&",$params);
     }
 
     public function getFullUrl($selector, $params = array())
