@@ -1,6 +1,10 @@
 <?php
 
+use Lizmap\Project\Project;
+use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Project\UserFilesFinder;
 use Lizmap\Request\RemoteStorageRequest;
+use Lizmap\Server\Server;
 
 /**
  * Displays a full featured map based on one Qgis project.
@@ -22,7 +26,7 @@ class lizMapCtrl extends jController
     /**
      * Used to pass project Object (no need to rebuild it).
      *
-     * @var \Lizmap\Project\Project
+     * @var Project
      */
     protected $projectObj;
 
@@ -66,7 +70,7 @@ class lizMapCtrl extends jController
         $rep->action = 'view~default:index';
 
         // Check server status
-        $server = new \Lizmap\Server\Server();
+        $server = new Server();
 
         // QGIS server version
         $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
@@ -103,7 +107,7 @@ class lizMapCtrl extends jController
                     return $rep;
                 }
                 $project = $lser->defaultProject;
-            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+            } catch (UnknownLizmapProjectException $e) {
                 jMessage::add('The parameter project is mandatory!', 'error');
 
                 return $rep;
@@ -118,7 +122,7 @@ class lizMapCtrl extends jController
 
                 return $rep;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 
             return $rep;
@@ -153,7 +157,7 @@ class lizMapCtrl extends jController
         // the html response
         /** @var AbstractLizmapHtmlResponse $rep */
         $rep = $this->getResponse('htmlmap');
-        $rep->addJSLink((jUrl::get('view~translate:index')).'?lang='.jApp::config()->locale, array('defer' => ''));
+        $rep->addJSLink(jUrl::get('view~translate:index').'?lang='.jApp::config()->locale, array('defer' => ''));
 
         $this->repositoryKey = $lrep->getKey();
         $this->projectKey = $lproj->getKey();
@@ -411,67 +415,29 @@ class lizMapCtrl extends jController
                 }
             }
 
-            // Add JS files found in media/js
-            $jsDirArray = array('default', $project);
-            foreach ($jsDirArray as $dir) {
-                $jsUrls = array();
-                $mjsUrls = array();
-                $cssUrls = array();
-                $items = array(
-                    'media/js/',
-                    '../media/js/',
-                );
-                foreach ($items as $item) {
-                    $jsPathRoot = realpath($repositoryPath.$item.$dir);
-                    if (is_dir($jsPathRoot)) {
-                        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename) {
-                            $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
-                            if ($fileExtension == 'js' || $fileExtension == 'mjs' || $fileExtension == 'css') {
-                                $jsPath = realpath($filename);
-                                $jsRelPath = $item.$dir.str_replace($jsPathRoot, '', $jsPath);
-                                $url = 'view~media:getMedia';
-                                if ($fileExtension == 'css') {
-                                    $url = 'view~media:getCssFile';
-                                }
-                                $jsUrl = jUrl::get(
-                                    $url,
-                                    array(
-                                        'repository' => $lrep->getKey(),
-                                        'project' => $project,
-                                        'mtime' => filemtime($filename),
-                                        'path' => $jsRelPath,
-                                    )
-                                );
-                                if ($fileExtension == 'js') {
-                                    $jsUrls[] = $jsUrl;
-                                    ++$countUserJs;
-                                } elseif ($fileExtension == 'mjs') {
-                                    $mjsUrls[] = $jsUrl;
-                                    ++$countUserJs;
-                                } else {
-                                    $cssUrls[] = $jsUrl;
-                                }
-                            }
-                        }
-                    }
-                }
+            $fileFinder = new UserFilesFinder();
+            $allURLS = $fileFinder->listFileURLS($lproj);
 
-                // Add CSS, MJS and JS files ordered by name
-                sort($cssUrls);
-                foreach ($cssUrls as $cssUrl) {
-                    $rep->addCSSLink($cssUrl);
-                }
-                sort($jsUrls);
-                foreach ($jsUrls as $jsUrl) {
-                    // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-                    $rep->addContent('<script type="text/javascript" defer src="'.$jsUrl.'" ></script>');
-                }
-                sort($mjsUrls);
-                foreach ($mjsUrls as $mjsUrl) {
-                    // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-                    $rep->addContent('<script type="module" defer src="'.$mjsUrl.'" ></script>');
-                }
+            $cssUrls = $allURLS['css'];
+            $jsUrls = $allURLS['js'];
+            $mjsUrls = $allURLS['mjs'];
+            $countUserJs = count($jsUrls) + count($mjsUrls);
+            // Add CSS, MJS and JS files ordered by name
+            sort($cssUrls);
+            foreach ($cssUrls as $cssUrl) {
+                $rep->addCSSLink($cssUrl);
             }
+            sort($jsUrls);
+            foreach ($jsUrls as $jsUrl) {
+                // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
+                $rep->addContent('<script type="text/javascript" defer src="'.$jsUrl.'" ></script>');
+            }
+            sort($mjsUrls);
+            foreach ($mjsUrls as $mjsUrl) {
+                // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
+                $rep->addContent('<script type="module" defer src="'.$mjsUrl.'" ></script>');
+            }
+
         }
         $rep->setBodyAttributes(array('data-lizmap-user-defined-js-count' => $countUserJs));
 
@@ -560,11 +526,11 @@ class lizMapCtrl extends jController
 
         // Add Google Analytics ID
         $assign['googleAnalyticsID'] = '';
-        if ($lser->googleAnalyticsID != '' && preg_match('/^UA-\\d+-\\d+$/', $lser->googleAnalyticsID) == 1) {
+        if ($lser->googleAnalyticsID != '' && preg_match('/^UA-\d+-\d+$/', $lser->googleAnalyticsID) == 1) {
             $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
         }
 
-        if (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view')) {
+        if (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view')) {
             if ($lproj->qgisLizmapPluginUpdateNeeded()) {
                 $rep->setBodyAttributes(array('data-lizmap-plugin-update-warning-url' => jUrl::get('admin~qgis_projects:index')));
             } elseif ($lproj->projectCountCfgWarnings() >= 1) {
